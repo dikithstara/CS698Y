@@ -1,0 +1,2380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pingala Portal - Course Recommendation Evaluation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: #eb4034;
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 1.8em;
+            font-weight: 700;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .nav-bar {
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 0 30px;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        .nav-links li {
+            padding: 15px 0;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #003087;
+            font-weight: 600;
+            padding: 5px 0;
+            border-bottom: 3px solid transparent;
+            transition: border-color 0.3s;
+        }
+
+        .nav-links a.active {
+            border-bottom: 3px solid #003087;
+        }
+
+        .main-content {
+            padding: 30px;
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 30px;
+        }
+
+        .welcome-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            grid-column: 1 / -1;
+        }
+
+        .welcome-banner h2 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        /* Dashboard Cards */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+            grid-column: 1 / -1;
+        }
+
+        .dashboard-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid #003087;
+        }
+
+        .card-title {
+            font-weight: 600;
+            color: #003087;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Course Catalog Styles */
+        .section-title {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #003087;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .search-box {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .search-box input:focus {
+            border-color: #003087;
+        }
+
+        .department-list {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
+        }
+
+        .department-header {
+            padding: 15px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            font-weight: 600;
+            color: #003087;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .department-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e9ecef;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .department-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .department-item:last-child {
+            border-bottom: none;
+        }
+
+        /* Recommendation Card with Animation */
+        .recommendation-card {
+            background: #F0F8FF;
+            border: 2px solid #003087;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 48, 135, 0.1);
+            position: sticky;
+            top: 20px;
+            animation: pulse 2s ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 48, 135, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(0, 48, 135, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 48, 135, 0); }
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            gap: 10px;
+        }
+
+        .card-title {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #003087;
+            margin: 0;
+        }
+
+        .card-subtitle {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+        }
+
+        .course-list {
+            list-style: none;
+            margin: 0 0 20px 0;
+        }
+
+        .course-list-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #d1e7ff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .course-list-item:last-child {
+            border-bottom: none;
+        }
+
+        .course-info {
+            flex: 1;
+        }
+
+        .course-name {
+            font-weight: 600;
+            color: #003087;
+            display: block;
+        }
+
+        .course-fullname {
+            font-size: 0.9em;
+            color: #555;
+            display: block;
+            margin-top: 2px;
+        }
+
+        .course-credits {
+            background: #003087;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        .view-all-btn {
+            background: #003087;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            width: 100%;
+            transition: background-color 0.3s;
+            text-align: center;
+            display: block;
+            text-decoration: none;
+        }
+
+        .view-all-btn:hover {
+            background: #002366;
+        }
+
+        /* Course Cards */
+        .course-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .course-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-color: #003087;
+        }
+
+        .course-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .course-code {
+            font-weight: 700;
+            color: #003087;
+            font-size: 1.1em;
+        }
+
+        .course-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .course-meta {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .course-tag {
+            background: #f0f0f0;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            color: #555;
+        }
+
+        .course-description {
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.5;
+            font-size: 0.95em;
+        }
+
+        .course-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            font-size: 0.9em;
+        }
+
+        .btn-primary {
+            background: #003087;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #002366;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #003087;
+            color: #003087;
+        }
+
+        .btn-outline:hover {
+            background: #F0F8FF;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+
+        /* Filter Panel */
+        .filter-panel {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .filter-title {
+            font-weight: 600;
+            color: #003087;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .filter-group {
+            margin-bottom: 20px;
+        }
+
+        .filter-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #003087;
+            font-size: 0.95em;
+        }
+
+        .filter-dropdown {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .filter-dropdown:focus {
+            border-color: #003087;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-item input {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Filter Actions */
+        .filter-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-filter {
+            flex: 1;
+            padding: 10px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s;
+        }
+
+        .btn-apply {
+            background: #003087;
+            color: white;
+        }
+
+        .btn-apply:hover {
+            background: #002366;
+        }
+
+        .btn-reset {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-reset:hover {
+            background: #545b62;
+        }
+
+        /* Tooltip for Professor Ratings */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #003087;
+            color: white;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.8em;
+            font-weight: normal;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .active-filters {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .active-filters-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #003087;
+            font-size: 1em;
+        }
+
+        .filter-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .filter-tag {
+            background: #003087;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+
+        .filter-tag .remove {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1em;
+        }
+
+        /* Explanation Section - Improved with Progressive Disclosure */
+        .explanation-section {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid #003087;
+            display: none;
+        }
+
+        .explanation-title {
+            font-weight: 600;
+            color: #003087;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+
+        .explanation-list {
+            list-style: none;
+        }
+
+        .explanation-item {
+            padding: 5px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 0.9em;
+        }
+
+        .explanation-item:before {
+            content: "✓";
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        /* Summary Badges for Quick Understanding */
+        .explanation-badges {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .explanation-badge {
+            background: #e8f5e8;
+            color: #155724;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 500;
+            border: 1px solid #c3e6cb;
+        }
+
+        /* Cart Styles with Enhanced Features */
+        .cart-sidebar {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 20px;
+        }
+
+        .cart-title {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #003087;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cart-items {
+            margin-bottom: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .cart-item {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-code {
+            font-weight: 600;
+            color: #003087;
+            font-size: 0.95em;
+        }
+
+        .cart-item-title {
+            font-size: 0.85em;
+            color: #555;
+            margin-top: 2px;
+        }
+
+        .cart-item-credits {
+            background: #003087;
+            color: white;
+            padding: 3px 6px;
+            border-radius: 8px;
+            font-size: 0.75em;
+            font-weight: 600;
+        }
+
+        .remove-btn {
+            background: none;
+            border: none;
+            color: #dc3545;
+            cursor: pointer;
+            font-size: 1.1em;
+            margin-left: 8px;
+            padding: 4px;
+            border-radius: 4px;
+        }
+
+        .remove-btn:hover {
+            background: rgba(220, 53, 69, 0.1);
+        }
+
+        /* Bulk Actions in Cart */
+        .cart-bulk-actions {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .cart-summary {
+            border-top: 1px solid #e0e0e0;
+            padding-top: 15px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+        }
+
+        .summary-total {
+            font-weight: 700;
+            color: #003087;
+            border-top: 1px solid #e0e0e0;
+            padding-top: 8px;
+            margin-top: 8px;
+        }
+
+        .cart-actions {
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .btn-full {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        /* Schedule Conflict Warning */
+        .conflict-warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85em;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast-icon {
+            font-size: 1.2em;
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            margin-bottom: 3px;
+            font-size: 0.95em;
+        }
+
+        .toast-message {
+            font-size: 0.85em;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.1em;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        /* Utility Classes */
+        .hidden {
+            display: none;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-20 {
+            margin-top: 20px;
+        }
+
+        .mb-20 {
+            margin-bottom: 20px;
+        }
+
+        /* Evaluation Instructions */
+        .evaluation-panel {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+            grid-column: 1 / -1;
+        }
+
+        .evaluation-title {
+            font-weight: 700;
+            color: #856404;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .task-list {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .task-item {
+            padding: 8px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .task-item:before {
+            content: "▸";
+            color: #856404;
+            font-weight: bold;
+        }
+
+        /* Feedback Section */
+        .feedback-section {
+            margin-top: 15px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .feedback-title {
+            font-weight: 600;
+            color: #003087;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+        }
+
+        .feedback-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .feedback-btn {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            background: white;
+            transition: all 0.3s;
+        }
+
+        .feedback-btn:hover {
+            background: #f0f0f0;
+        }
+
+        .not-interested-btn {
+            color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .not-interested-btn:hover {
+            background: #f8d7da;
+        }
+
+        /* Comparison Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 1000px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 25px;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 15px;
+        }
+
+        .modal-title {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #003087;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .comparison-table th {
+            background: #f8f9fa;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #003087;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .comparison-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .course-comparison-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .comparison-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: flex-end;
+        }
+
+        /* Difficulty Level Badges */
+        .difficulty-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 600;
+        }
+
+        .difficulty-beginner {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .difficulty-intermediate {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .difficulty-advanced {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* Schedule Display */
+        .schedule-display {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            font-size: 0.85em;
+        }
+
+        .schedule-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .schedule-item:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Course Checkbox for Comparison */
+        .course-checkbox {
+            margin-right: 10px;
+        }
+
+        /* Floating Comparison Button */
+        .floating-comparison-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #003087;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 15px 25px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 999;
+            transition: all 0.3s;
+        }
+
+        .floating-comparison-btn:hover {
+            background: #002366;
+            transform: translateY(-2px);
+        }
+
+        .comparison-count {
+            background: #dc3545;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Pingala Portal - IIT Kanpur</h1>
+            <div class="user-info">
+                <span>Welcome, Student</span>
+                <span>|</span>
+                <span>Logout</span>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="nav-bar">
+            <ul class="nav-links">
+                <li><a href="#" class="active">Student Add & Drop Application</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+
+            <!-- Left Column: Course Catalog and Results -->
+            <div>
+                <!-- Search and Filters -->
+                <div class="search-box">
+                    <input type="text" placeholder="Search courses by name, code, or professor...">
+                </div>
+
+                <div class="filter-panel">
+                    <h3 class="filter-title">Filter Courses</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="filter-group">
+                            <label class="filter-label">Department</label>
+                            <select class="filter-dropdown" id="department-filter">
+                                <option value="">All Departments</option>
+                                <option value="cs">Computer Science</option>
+                                <option value="math">Mathematics</option>
+                                <option value="ee">Electrical Engineering</option>
+                                <option value="me">Mechanical Engineering</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">Credits</label>
+                            <select class="filter-dropdown" id="credits-filter">
+                                <option value="">Any Credits</option>
+                                <option value="1-4">1-4 Credits</option>
+                                <option value="5-8">5-8 Credits</option>
+                                <option value="9-12">9-12 Credits</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="filter-group">
+                            <label class="filter-label">Difficulty Level</label>
+                            <select class="filter-dropdown" id="difficulty-filter">
+                                <option value="">Any Difficulty</option>
+                                <option value="beginner">Beginner</option>
+                                <option value="intermediate">Intermediate</option>
+                                <option value="advanced">Advanced</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">Schedule Availability</label>
+                            <select class="filter-dropdown" id="schedule-filter">
+                                <option value="">Any Schedule</option>
+                                <option value="morning">Morning Classes</option>
+                                <option value="afternoon">Afternoon Classes</option>
+                                <option value="evening">Evening Classes</option>
+                                <option value="no-conflict">No Schedule Conflicts</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Additional Filters</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="core-courses" name="course-type">
+                                <label for="core-courses">Core Courses Only</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="highly-rated" name="professor-rating">
+                                <label for="highly-rated">
+                                    <span class="tooltip">
+                                        Professor Student Ratings
+                                        <span class="tooltiptext">Filter for courses taught by instructors with high student evaluation scores (4.0+ rating)</span>
+                                    </span>
+                                </label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="no-prerequisites" name="prerequisites">
+                                <label for="no-prerequisites">No Prerequisites Required</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Apply and Reset Filters Buttons -->
+                    <div class="filter-actions">
+                        <button class="btn-filter btn-apply" id="apply-filters-btn">Apply Filters</button>
+                        <button class="btn-filter btn-reset" id="reset-filters-btn">Reset Filters</button>
+                    </div>
+                </div>
+
+                <!-- Active Filters -->
+                <div class="active-filters">
+                    <h3 class="active-filters-title">Active Filters</h3>
+                    <div class="filter-tags" id="active-filter-tags">
+                        <div class="no-filters" style="color: #666; font-style: italic;">No filters applied</div>
+                    </div>
+                </div>
+
+                <!-- Course Results -->
+                <h2 class="section-title">Available Courses</h2>
+                
+                <div class="course-card" data-department="cs" data-credits="9" data-type="elective" data-rating="yes" data-difficulty="advanced" data-schedule='{"Mon": ["10:00", "11:30"], "Wed": ["10:00", "11:30"]}'>
+                    <div class="course-header">
+                        <div class="course-code">
+                            <input type="checkbox" class="course-checkbox" data-course="CS455" data-title="Machine Learning Systems" data-credits="9" data-difficulty="advanced" data-department="Computer Science">
+                            CS455
+                        </div>
+                        <div class="course-credits">9 Credits</div>
+                    </div>
+                    <h3 class="course-title">Machine Learning Systems</h3>
+                    <div class="course-meta">
+                        <span class="course-tag">Elective</span>
+                        <span class="course-tag">Computer Science</span>
+                        <span class="difficulty-badge difficulty-advanced">Advanced</span>
+                        <span class="course-tag">Prerequisite Completed</span>
+                    </div>
+                    <p class="course-description">
+                        Advanced course covering machine learning algorithms, neural networks, and deep learning applications. 
+                        Focus on practical implementation and real-world case studies.
+                    </p>
+                    
+                    <!-- Schedule Display -->
+                    <div class="schedule-display">
+                        <div class="schedule-item">
+                            <span>Monday</span>
+                            <span>10:00 AM - 11:30 AM</span>
+                        </div>
+                        <div class="schedule-item">
+                            <span>Wednesday</span>
+                            <span>10:00 AM - 11:30 AM</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Summary Badges for Quick Understanding -->
+                    <div class="explanation-badges">
+                        <span class="explanation-badge">Prerequisite: A in CS201</span>
+                        <span class="explanation-badge">Matches AI Interest</span>
+                        <span class="explanation-badge">94% Satisfaction</span>
+                    </div>
+                    
+                    <div class="course-actions">
+                        <button class="btn btn-primary add-to-cart-btn" data-course="CS455" data-title="Machine Learning Systems" data-credits="9">
+                            Add to Cart
+                        </button>
+                        <button class="btn btn-outline show-explanation-btn" data-target="explanation-1">
+                            Detailed Explanation
+                        </button>
+                        <button class="btn btn-secondary not-interested-btn" data-course="CS455">
+                            Not Interested
+                        </button>
+                    </div>
+                    
+                    <!-- Schedule Conflict Warning -->
+                    <div class="conflict-warning hidden" id="conflict-1">
+                        ⚠️ Time conflict detected: Overlaps with CS301 (Mon/Wed 10-11:30 AM)
+                    </div>
+                    
+                    <div class="explanation-section" id="explanation-1">
+                        <div class="explanation-title">Why this course was recommended for you:</div>
+                        <ul class="explanation-list">
+                            <li class="explanation-item">You excelled in the prerequisite course CS201 (Grade: A)</li>
+                            <li class="explanation-item">Matches your indicated research interest: "Artificial Intelligence"</li>
+                            <li class="explanation-item">High satisfaction rate (94%) among students with similar background</li>
+                            <li class="explanation-item">Completes requirement for AI Specialization track</li>
+                        </ul>
+                        
+                        <!-- Feedback Section -->
+                        <div class="feedback-section">
+                            <div class="feedback-title">Was this recommendation helpful?</div>
+                            <div class="feedback-buttons">
+                                <button class="feedback-btn like-feedback" data-course="CS455">👍 Yes</button>
+                                <button class="feedback-btn dislike-feedback" data-course="CS455">👎 No</button>
+                                <button class="feedback-btn" onclick="alert('The system recommends this based on your strong performance in prerequisites, declared interests, and degree requirements.')">Why this recommendation?</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="course-card" data-department="math" data-credits="9" data-type="core" data-rating="yes" data-difficulty="intermediate" data-schedule='{"Tue": ["14:00", "15:30"], "Thu": ["14:00", "15:30"]}'>
+                    <div class="course-header">
+                        <div class="course-code">
+                            <input type="checkbox" class="course-checkbox" data-course="MATH301" data-title="Advanced Calculus" data-credits="9" data-difficulty="intermediate" data-department="Mathematics">
+                            MATH301
+                        </div>
+                        <div class="course-credits">9 Credits</div>
+                    </div>
+                    <h3 class="course-title">Advanced Calculus</h3>
+                    <div class="course-meta">
+                        <span class="course-tag">Core</span>
+                        <span class="course-tag">Mathematics</span>
+                        <span class="difficulty-badge difficulty-intermediate">Intermediate</span>
+                        <span class="course-tag">Highly Rated Professor</span>
+                    </div>
+                    <p class="course-description">
+                        In-depth study of multivariable calculus, vector analysis, and differential equations. 
+                        Emphasis on theoretical foundations and applications in engineering.
+                    </p>
+                    
+                    <!-- Schedule Display -->
+                    <div class="schedule-display">
+                        <div class="schedule-item">
+                            <span>Tuesday</span>
+                            <span>2:00 PM - 3:30 PM</span>
+                        </div>
+                        <div class="schedule-item">
+                            <span>Thursday</span>
+                            <span>2:00 PM - 3:30 PM</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Summary Badges for Quick Understanding -->
+                    <div class="explanation-badges">
+                        <span class="explanation-badge">Required Course</span>
+                        <span class="explanation-badge">Prerequisite: A- in MATH202</span>
+                        <span class="explanation-badge">Professor Rating: 4.8/5</span>
+                    </div>
+                    
+                    <div class="course-actions">
+                        <button class="btn btn-primary add-to-cart-btn" data-course="MATH301" data-title="Advanced Calculus" data-credits="9">
+                            Add to Cart
+                        </button>
+                        <button class="btn btn-outline show-explanation-btn" data-target="explanation-2">
+                            Detailed Explanation
+                        </button>
+                        <button class="btn btn-secondary not-interested-btn" data-course="MATH301">
+                            Not Interested
+                        </button>
+                    </div>
+                    
+                    <div class="explanation-section" id="explanation-2">
+                        <div class="explanation-title">Why this course was recommended for you:</div>
+                        <ul class="explanation-list">
+                            <li class="explanation-item">Required for your degree program (Computer Science)</li>
+                            <li class="explanation-item">You completed MATH202 with strong performance (Grade: A-)</li>
+                            <li class="explanation-item">Professor Dr. Sharma has exceptional student ratings (4.8/5)</li>
+                            <li class="explanation-item">Fits well with your current course schedule</li>
+                        </ul>
+                        
+                        <!-- Feedback Section -->
+                        <div class="feedback-section">
+                            <div class="feedback-title">Was this recommendation helpful?</div>
+                            <div class="feedback-buttons">
+                                <button class="feedback-btn like-feedback" data-course="MATH301">👍 Yes</button>
+                                <button class="feedback-btn dislike-feedback" data-course="MATH301">👎 No</button>
+                                <button class="feedback-btn" onclick="alert('This course is required for your degree, and your strong performance in prerequisites indicates you will succeed.')">Why this recommendation?</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="course-card" data-department="ee" data-credits="8" data-type="core" data-rating="no" data-difficulty="intermediate" data-schedule='{"Mon": ["09:00", "10:30"], "Wed": ["09:00", "10:30"], "Fri": ["09:00", "10:30"]}'>
+                    <div class="course-header">
+                        <div class="course-code">
+                            <input type="checkbox" class="course-checkbox" data-course="EE201" data-title="Circuit Analysis" data-credits="8" data-difficulty="intermediate" data-department="Electrical Engineering">
+                            EE201
+                        </div>
+                        <div class="course-credits">8 Credits</div>
+                    </div>
+                    <h3 class="course-title">Circuit Analysis</h3>
+                    <div class="course-meta">
+                        <span class="course-tag">Core</span>
+                        <span class="course-tag">Electrical Engineering</span>
+                        <span class="difficulty-badge difficulty-intermediate">Intermediate</span>
+                        <span class="course-tag">Prerequisite Completed</span>
+                    </div>
+                    <p class="course-description">
+                        Comprehensive analysis of electrical circuits, network theorems, and transient response. 
+                        Laboratory component for practical verification of theoretical concepts.
+                    </p>
+                    
+                    <!-- Schedule Display -->
+                    <div class="schedule-display">
+                        <div class="schedule-item">
+                            <span>Monday</span>
+                            <span>9:00 AM - 10:30 AM</span>
+                        </div>
+                        <div class="schedule-item">
+                            <span>Wednesday</span>
+                            <span>9:00 AM - 10:30 AM</span>
+                        </div>
+                        <div class="schedule-item">
+                            <span>Friday</span>
+                            <span>9:00 AM - 10:30 AM</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Summary Badges for Quick Understanding -->
+                    <div class="explanation-badges">
+                        <span class="explanation-badge">Required Course</span>
+                        <span class="explanation-badge">Prerequisite: B+ in EE101</span>
+                        <span class="explanation-badge">Hardware Systems Interest</span>
+                    </div>
+                    
+                    <div class="course-actions">
+                        <button class="btn btn-primary add-to-cart-btn" data-course="EE201" data-title="Circuit Analysis" data-credits="8">
+                            Add to Cart
+                        </button>
+                        <button class="btn btn-outline show-explanation-btn" data-target="explanation-3">
+                            Detailed Explanation
+                        </button>
+                        <button class="btn btn-secondary not-interested-btn" data-course="EE201">
+                            Not Interested
+                        </button>
+                    </div>
+                    
+                    <div class="explanation-section" id="explanation-3">
+                        <div class="explanation-title">Why this course was recommended for you:</div>
+                        <ul class="explanation-list">
+                            <li class="explanation-item">Required course for Computer Science curriculum</li>
+                            <li class="explanation-item">You completed EE101 with grade B+</li>
+                            <li class="explanation-item">Complements your interest in hardware systems</li>
+                            <li class="explanation-item">Good schedule fit with your other selected courses</li>
+                        </ul>
+                        
+                        <!-- Feedback Section -->
+                        <div class="feedback-section">
+                            <div class="feedback-title">Was this recommendation helpful?</div>
+                            <div class="feedback-buttons">
+                                <button class="feedback-btn like-feedback" data-course="EE201">👍 Yes</button>
+                                <button class="feedback-btn dislike-feedback" data-course="EE201">👎 No</button>
+                                <button class="feedback-btn" onclick="alert('This course fulfills a requirement for your program and matches your demonstrated interest in hardware systems.')">Why this recommendation?</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Additional course for demonstration -->
+                <div class="course-card" data-department="cs" data-credits="6" data-type="elective" data-rating="yes" data-difficulty="beginner" data-schedule='{"Tue": ["11:00", "12:30"], "Thu": ["11:00", "12:30"]}'>
+                    <div class="course-header">
+                        <div class="course-code">
+                            <input type="checkbox" class="course-checkbox" data-course="CS315" data-title="Web Development" data-credits="6" data-difficulty="beginner" data-department="Computer Science">
+                            CS315
+                        </div>
+                        <div class="course-credits">6 Credits</div>
+                    </div>
+                    <h3 class="course-title">Web Development</h3>
+                    <div class="course-meta">
+                        <span class="course-tag">Elective</span>
+                        <span class="course-tag">Computer Science</span>
+                        <span class="difficulty-badge difficulty-beginner">Beginner</span>
+                        <span class="course-tag">Highly Rated Professor</span>
+                    </div>
+                    <p class="course-description">
+                        Comprehensive course on modern web development technologies including HTML5, CSS3, JavaScript, and React. 
+                        Focus on responsive design and web application development.
+                    </p>
+                    
+                    <!-- Schedule Display -->
+                    <div class="schedule-display">
+                        <div class="schedule-item">
+                            <span>Tuesday</span>
+                            <span>11:00 AM - 12:30 PM</span>
+                        </div>
+                        <div class="schedule-item">
+                            <span>Thursday</span>
+                            <span>11:00 AM - 12:30 PM</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Summary Badges for Quick Understanding -->
+                    <div class="explanation-badges">
+                        <span class="explanation-badge">Prerequisite: CS101</span>
+                        <span class="explanation-badge">Web Development Track</span>
+                        <span class="explanation-badge">Professor Rating: 4.7/5</span>
+                    </div>
+                    
+                    <div class="course-actions">
+                        <button class="btn btn-primary add-to-cart-btn" data-course="CS315" data-title="Web Development" data-credits="6">
+                            Add to Cart
+                        </button>
+                        <button class="btn btn-outline show-explanation-btn" data-target="explanation-4">
+                            Detailed Explanation
+                        </button>
+                        <button class="btn btn-secondary not-interested-btn" data-course="CS315">
+                            Not Interested
+                        </button>
+                    </div>
+                    
+                    <div class="explanation-section" id="explanation-4">
+                        <div class="explanation-title">Why this course was recommended for you:</div>
+                        <ul class="explanation-list">
+                            <li class="explanation-item">Complements your previous coursework in programming</li>
+                            <li class="explanation-item">Matches your interest in software development</li>
+                            <li class="explanation-item">High-demand skills in the current job market</li>
+                            <li class="explanation-item">Professor Dr. Gupta has excellent student reviews (4.7/5)</li>
+                        </ul>
+                        
+                        <!-- Feedback Section -->
+                        <div class="feedback-section">
+                            <div class="feedback-title">Was this recommendation helpful?</div>
+                            <div class="feedback-buttons">
+                                <button class="feedback-btn like-feedback" data-course="CS315">👍 Yes</button>
+                                <button class="feedback-btn dislike-feedback" data-course="CS315">👎 No</button>
+                                <button class="feedback-btn" onclick="alert('This course aligns with your career interests and has excellent instructor ratings.')">Why this recommendation?</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Recommendations and Cart -->
+            <div>
+                <!-- Recommendations Card with Animation -->
+                <div class="recommendation-card" id="recommendation-card">
+                    <div class="card-header">
+                        <div class="card-title">✨ Recommended For You</div>
+                    </div>
+                    <div class="card-subtitle">
+                        Based on your academic history and interests
+                    </div>
+                    <ul class="course-list">
+                        <li class="course-list-item">
+                            <div class="course-info">
+                                <span class="course-name">CS455 - Machine Learning</span>
+                                <span class="course-fullname">Artificial Intelligence Track</span>
+                            </div>
+                            <span class="course-credits">9 Cr</span>
+                        </li>
+                        <li class="course-list-item">
+                            <div class="course-info">
+                                <span class="course-name">MATH301 - Advanced Calculus</span>
+                                <span class="course-fullname">Mathematical Foundations</span>
+                            </div>
+                            <span class="course-credits">9 Cr</span>
+                        </li>
+                        <li class="course-list-item">
+                            <div class="course-info">
+                                <span class="course-name">EE201 - Circuit Analysis</span>
+                                <span class="course-fullname">Electrical Systems</span>
+                            </div>
+                            <span class="course-credits">8 Cr</span>
+                        </li>
+                    </ul>
+                    <button class="view-all-btn" id="view-all-recommendations">
+                        View All Recommendations
+                    </button>
+                </div>
+
+                <!-- Cart Sidebar with Enhanced Features -->
+                <div class="cart-sidebar">
+                    <h2 class="cart-title">
+                        🛒 Your Course Cart
+                    </h2>
+                    
+                    <!-- Bulk Actions -->
+                    <div class="cart-bulk-actions">
+                        <button class="btn btn-outline btn-full" id="compare-courses-btn" disabled>
+                            Compare Selected (0)
+                        </button>
+                        <button class="btn btn-secondary btn-full" id="remove-selected-btn" disabled>
+                            Remove Selected
+                        </button>
+                    </div>
+                    
+                    <div class="cart-items" id="cart-items">
+                        <div class="cart-item">
+                            <div class="cart-item-info">
+                                <div class="cart-item-code">CS201</div>
+                                <div class="cart-item-title">Data Structures</div>
+                            </div>
+                            <div class="cart-item-credits">8 Cr</div>
+                            <button class="remove-btn">×</button>
+                        </div>
+                    </div>
+                    
+                    <div class="cart-summary">
+                        <div class="summary-row">
+                            <span>Total Courses:</span>
+                            <span id="cart-count">1</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Total Credits:</span>
+                            <span id="total-credits">8</span>
+                        </div>
+                        <div class="summary-row summary-total">
+                            <span>Credits Remaining:</span>
+                            <span id="credits-remaining">34 of 42</span>
+                        </div>
+                    </div>
+                    
+                    <div class="cart-actions">
+                        <button class="btn btn-success btn-full" id="review-cart-btn">
+                            Review & Register
+                        </button>
+                        <button class="btn btn-outline btn-full">
+                            Save for Later
+                        </button>
+                    </div>
+                    
+                    <!-- Schedule Conflict Check -->
+                    <div class="conflict-warning hidden" id="cart-conflict-warning">
+                        ⚠️ Schedule conflicts detected in your cart
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Notification -->
+        <div class="toast" id="toast-notification">
+            <div class="toast-icon">✅</div>
+            <div class="toast-content">
+                <div class="toast-title">Course Added to Cart</div>
+                <div class="toast-message">Course has been added to your cart</div>
+            </div>
+            <button class="toast-close">×</button>
+        </div>
+
+        <!-- Comparison Modal -->
+        <div class="modal" id="comparison-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Course Comparison</h2>
+                    <button class="close-modal" id="close-comparison-modal">×</button>
+                </div>
+                <div id="comparison-content">
+                    <!-- Comparison content will be dynamically inserted here -->
+                </div>
+                <div class="comparison-actions">
+                    <button class="btn btn-primary" id="add-selected-to-cart">Add Selected to Cart</button>
+                    <button class="btn btn-outline" id="close-comparison-btn">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Comparison Button -->
+        <button class="floating-comparison-btn" id="floating-comparison-btn">
+            <span>Compare Courses</span>
+            <span class="comparison-count" id="floating-comparison-count">0</span>
+        </button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cart state
+            let cartItems = [
+                { code: 'CS201', title: 'Data Structures', credits: 8, schedule: {} }
+            ];
+            const maxCredits = 42;
+
+            // Comparison state
+            let comparisonItems = [];
+
+            // Filter state
+            let activeFilters = {
+                department: '',
+                credits: '',
+                difficulty: '',
+                schedule: '',
+                coreCourses: false,
+                highlyRated: false,
+                noPrerequisites: false
+            };
+
+            // Update cart display
+            function updateCartDisplay() {
+                const cartItemsContainer = document.getElementById('cart-items');
+                const cartCount = document.getElementById('cart-count');
+                const totalCredits = document.getElementById('total-credits');
+                const creditsRemaining = document.getElementById('credits-remaining');
+                
+                // Calculate totals
+                const currentCredits = cartItems.reduce((sum, item) => sum + item.credits, 0);
+                const remaining = maxCredits - currentCredits;
+                
+                // Update displays
+                cartCount.textContent = cartItems.length;
+                totalCredits.textContent = currentCredits;
+                creditsRemaining.textContent = `${remaining} of ${maxCredits}`;
+                
+                // Update cart items
+                cartItemsContainer.innerHTML = '';
+                cartItems.forEach((item, index) => {
+                    const cartItem = document.createElement('div');
+                    cartItem.className = 'cart-item';
+                    cartItem.innerHTML = `
+                        <div class="cart-item-info">
+                            <div class="cart-item-code">${item.code}</div>
+                            <div class="cart-item-title">${item.title}</div>
+                        </div>
+                        <div class="cart-item-credits">${item.credits} Cr</div>
+                        <button class="remove-btn" data-index="${index}">×</button>
+                    `;
+                    cartItemsContainer.appendChild(cartItem);
+                });
+                
+                // Add event listeners to remove buttons
+                document.querySelectorAll('.remove-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const index = parseInt(this.getAttribute('data-index'));
+                        cartItems.splice(index, 1);
+                        updateCartDisplay();
+                        checkScheduleConflicts();
+                        showToast('Course removed from cart', 'info');
+                    });
+                });
+
+                // Check for schedule conflicts
+                checkScheduleConflicts();
+            }
+
+            // Check for schedule conflicts in cart
+            function checkScheduleConflicts() {
+                const conflictWarning = document.getElementById('cart-conflict-warning');
+                let hasConflict = false;
+                
+                // Simple conflict detection - in a real system, this would be more sophisticated
+                if (cartItems.length > 1) {
+                    // Check if any courses have overlapping schedules
+                    const schedules = cartItems.map(item => item.schedule);
+                    
+                    // For demonstration, we'll just show a warning if there are multiple courses
+                    // In a real implementation, you would compare the actual schedules
+                    if (cartItems.length >= 2) {
+                        hasConflict = true;
+                    }
+                }
+                
+                if (hasConflict) {
+                    conflictWarning.classList.remove('hidden');
+                } else {
+                    conflictWarning.classList.add('hidden');
+                }
+            }
+
+            // Update comparison display
+            function updateComparisonDisplay() {
+                const comparisonCount = document.getElementById('comparison-count');
+                const floatingComparisonCount = document.getElementById('floating-comparison-count');
+                
+                comparisonCount.textContent = comparisonItems.length;
+                floatingComparisonCount.textContent = comparisonItems.length;
+                
+                // Update comparison button states
+                const compareBtn = document.getElementById('compare-courses-btn');
+                const floatingCompareBtn = document.getElementById('floating-comparison-btn');
+                
+                if (comparisonItems.length > 0) {
+                    compareBtn.disabled = false;
+                    compareBtn.textContent = `Compare Selected (${comparisonItems.length})`;
+                    floatingCompareBtn.style.display = 'flex';
+                } else {
+                    compareBtn.disabled = true;
+                    compareBtn.textContent = 'Compare Selected (0)';
+                    floatingCompareBtn.style.display = 'none';
+                }
+                
+                // Enable/disable remove selected button
+                const removeSelectedBtn = document.getElementById('remove-selected-btn');
+                removeSelectedBtn.disabled = comparisonItems.length === 0;
+            }
+
+            // Show toast notification
+            function showToast(message, type = 'success') {
+                const toast = document.getElementById('toast-notification');
+                const toastTitle = toast.querySelector('.toast-title');
+                const toastMessage = toast.querySelector('.toast-message');
+                const toastIcon = toast.querySelector('.toast-icon');
+                
+                // Set content based on type
+                if (type === 'success') {
+                    toast.style.background = '#28a745';
+                    toastIcon.textContent = '✅';
+                    toastTitle.textContent = 'Course Added to Cart';
+                } else if (type === 'info') {
+                    toast.style.background = '#17a2b8';
+                    toastIcon.textContent = 'ℹ️';
+                    toastTitle.textContent = 'Course Removed';
+                } else if (type === 'warning') {
+                    toast.style.background = '#ffc107';
+                    toastIcon.textContent = '⚠️';
+                    toastTitle.textContent = 'Schedule Conflict';
+                } else if (type === 'filter') {
+                    toast.style.background = '#003087';
+                    toastIcon.textContent = '🔍';
+                    toastTitle.textContent = 'Filters Applied';
+                } else if (type === 'comparison') {
+                    toast.style.background = '#6f42c1';
+                    toastIcon.textContent = '📊';
+                    toastTitle.textContent = 'Course Added to Comparison';
+                }
+                
+                toastMessage.textContent = message;
+                
+                // Show toast
+                toast.classList.add('show');
+                
+                // Auto-hide after 4 seconds
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 4000);
+            }
+
+            // Apply filters functionality
+            function applyFilters() {
+                const departmentFilter = document.getElementById('department-filter').value;
+                const creditsFilter = document.getElementById('credits-filter').value;
+                const difficultyFilter = document.getElementById('difficulty-filter').value;
+                const scheduleFilter = document.getElementById('schedule-filter').value;
+                const coreCourses = document.getElementById('core-courses').checked;
+                const highlyRated = document.getElementById('highly-rated').checked;
+                const noPrerequisites = document.getElementById('no-prerequisites').checked;
+                
+                // Update active filters state
+                activeFilters = {
+                    department: departmentFilter,
+                    credits: creditsFilter,
+                    difficulty: difficultyFilter,
+                    schedule: scheduleFilter,
+                    coreCourses: coreCourses,
+                    highlyRated: highlyRated,
+                    noPrerequisites: noPrerequisites
+                };
+                
+                // Get all course cards
+                const courseCards = document.querySelectorAll('.course-card');
+                
+                // Filter courses
+                courseCards.forEach(card => {
+                    let showCard = true;
+                    
+                    // Department filter
+                    if (departmentFilter && card.dataset.department !== departmentFilter) {
+                        showCard = false;
+                    }
+                    
+                    // Credits filter
+                    if (creditsFilter && card.dataset.credits) {
+                        const credits = parseInt(card.dataset.credits);
+                        if (creditsFilter === '1-4' && (credits < 1 || credits > 4)) {
+                            showCard = false;
+                        } else if (creditsFilter === '5-8' && (credits < 5 || credits > 8)) {
+                            showCard = false;
+                        } else if (creditsFilter === '9-12' && (credits < 9 || credits > 12)) {
+                            showCard = false;
+                        }
+                    }
+                    
+                    // Difficulty filter
+                    if (difficultyFilter && card.dataset.difficulty !== difficultyFilter) {
+                        showCard = false;
+                    }
+                    
+                    // Schedule filter
+                    if (scheduleFilter && card.dataset.schedule) {
+                        const schedule = JSON.parse(card.dataset.schedule);
+                        
+                        if (scheduleFilter === 'morning') {
+                            // Check if any class is in the morning (before 12 PM)
+                            let hasMorningClass = false;
+                            Object.values(schedule).forEach(times => {
+                                const startTime = times[0];
+                                const hour = parseInt(startTime.split(':')[0]);
+                                if (hour < 12) hasMorningClass = true;
+                            });
+                            if (!hasMorningClass) showCard = false;
+                        } else if (scheduleFilter === 'afternoon') {
+                            // Check if any class is in the afternoon (12 PM - 5 PM)
+                            let hasAfternoonClass = false;
+                            Object.values(schedule).forEach(times => {
+                                const startTime = times[0];
+                                const hour = parseInt(startTime.split(':')[0]);
+                                if (hour >= 12 && hour < 17) hasAfternoonClass = true;
+                            });
+                            if (!hasAfternoonClass) showCard = false;
+                        } else if (scheduleFilter === 'evening') {
+                            // Check if any class is in the evening (after 5 PM)
+                            let hasEveningClass = false;
+                            Object.values(schedule).forEach(times => {
+                                const startTime = times[0];
+                                const hour = parseInt(startTime.split(':')[0]);
+                                if (hour >= 17) hasEveningClass = true;
+                            });
+                            if (!hasEveningClass) showCard = false;
+                        } else if (scheduleFilter === 'no-conflict') {
+                            // Check if course conflicts with any in cart
+                            // This is a simplified check - in reality, you'd compare schedules
+                            if (cartItems.length > 0) {
+                                // For demo purposes, we'll just check if it's CS455 (which we know conflicts)
+                                if (card.querySelector('.course-code').textContent.includes('CS455')) {
+                                    showCard = false;
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Core courses filter
+                    if (coreCourses && card.dataset.type !== 'core') {
+                        showCard = false;
+                    }
+                    
+                    // Highly rated filter
+                    if (highlyRated && card.dataset.rating !== 'yes') {
+                        showCard = false;
+                    }
+                    
+                    // No prerequisites filter (simplified - in reality would check actual prerequisites)
+                    if (noPrerequisites && card.querySelector('.explanation-badges').textContent.includes('Prerequisite')) {
+                        showCard = false;
+                    }
+                    
+                    // Show or hide card based on filters
+                    if (showCard) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+                
+                // Update active filters display
+                updateActiveFiltersDisplay();
+                
+                // Show feedback
+                showToast('Filters applied successfully', 'filter');
+            }
+
+            // Reset filters functionality
+            function resetFilters() {
+                // Reset form inputs
+                document.getElementById('department-filter').value = '';
+                document.getElementById('credits-filter').value = '';
+                document.getElementById('difficulty-filter').value = '';
+                document.getElementById('schedule-filter').value = '';
+                document.getElementById('core-courses').checked = false;
+                document.getElementById('highly-rated').checked = false;
+                document.getElementById('no-prerequisites').checked = false;
+                
+                // Reset active filters state
+                activeFilters = {
+                    department: '',
+                    credits: '',
+                    difficulty: '',
+                    schedule: '',
+                    coreCourses: false,
+                    highlyRated: false,
+                    noPrerequisites: false
+                };
+                
+                // Show all course cards
+                const courseCards = document.querySelectorAll('.course-card');
+                courseCards.forEach(card => {
+                    card.style.display = 'block';
+                });
+                
+                // Update active filters display
+                updateActiveFiltersDisplay();
+                
+                // Show feedback
+                showToast('Filters reset successfully', 'info');
+            }
+
+            // Update active filters display
+            function updateActiveFiltersDisplay() {
+                const activeFiltersContainer = document.getElementById('active-filter-tags');
+                activeFiltersContainer.innerHTML = '';
+                
+                // Check if any filters are active
+                const hasActiveFilters = Object.values(activeFilters).some(value => 
+                    value !== '' && value !== false
+                );
+                
+                if (!hasActiveFilters) {
+                    activeFiltersContainer.innerHTML = '<div class="no-filters" style="color: #666; font-style: italic;">No filters applied</div>';
+                    return;
+                }
+                
+                // Add filter tags for active filters
+                if (activeFilters.department) {
+                    const departmentText = getDepartmentName(activeFilters.department);
+                    const filterTag = document.createElement('div');
+                    filterTag.className = 'filter-tag';
+                    filterTag.innerHTML = `
+                        Department: ${departmentText}
+                        <button class="remove" data-filter="department">×</button>
+                    `;
+                    activeFiltersContainer.appendChild(filterTag);
+                }
+                
+                if (activeFilters.credits) {
+                    const creditsText = getCreditsText(activeFilters.credits);
+                    const filterTag = document.createElement('div');
+                    filterTag.className = 'filter-tag';
+                    filterTag.innerHTML = `
+                        Credits: ${creditsText}
+                        <button class="remove" data-filter="credits">×</button>
+                    `;
+                    activeFiltersContainer.appendChild(filterTag);
+                }
+                
+                if (activeFilters.difficulty) {
+                    const difficultyText = getDifficultyText(activeFilters.difficulty);
+                    const filterTag = document.createElement('div');
+                    filterTag.className = 'filter-tag';
+                    filterTag.innerHTML = `
+                        Difficulty: ${difficultyText}
+                        <button class="remove" data-filter="difficulty">×</button>
+                    `;
+                    activeFiltersContainer.appendChild(filterTag);
+                }
+                
+                if (activeFilters.schedule) {
+                    const scheduleText = getScheduleText(activeFilters.schedule);
+                    const filterTag = document.createElement('div');
+                    filterTag.className = 'filter-tag';
+                    filterTag.innerHTML = `
+                        Schedule: ${scheduleText}
+                        <button class="remove" data-filter="schedule">×</button>
+                    `;
+                    activeFiltersContainer.appendChild(filterTag);
+                }
+                
+                if (activeFilters.coreCourses) {
+                    const filterTag = document.createElement('div');
+                    filterTag.className = 'filter-tag';
+                    filterTag.innerHTML = `
+                        Core Courses Only
+                        <button class="remove" data-filter="coreCourses">×</button>
+                    `;
+                    activeFiltersContainer.appendChild(filterTag);
+                }
+                
+                if (activeFilters.highlyRated) {
+                    const filterTag = document.createElement('div');
+                    filterTag.className = 'filter-tag';
+                    filterTag.innerHTML = `
+                        Highly Rated Professors
+                        <button class="remove" data-filter="highlyRated">×</button>
+                    `;
+                    activeFiltersContainer.appendChild(filterTag);
+                }
+                
+                if (activeFilters.noPrerequisites) {
+                    const filterTag = document.createElement('div');
+                    filterTag.className = 'filter-tag';
+                    filterTag.innerHTML = `
+                        No Prerequisites
+                        <button class="remove" data-filter="noPrerequisites">×</button>
+                    `;
+                    activeFiltersContainer.appendChild(filterTag);
+                }
+                
+                // Add event listeners to remove buttons
+                document.querySelectorAll('.filter-tag .remove').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const filterType = this.getAttribute('data-filter');
+                        removeFilter(filterType);
+                    });
+                });
+            }
+
+            // Helper function to get department name
+            function getDepartmentName(code) {
+                const departments = {
+                    'cs': 'Computer Science',
+                    'math': 'Mathematics',
+                    'ee': 'Electrical Engineering',
+                    'me': 'Mechanical Engineering'
+                };
+                return departments[code] || code;
+            }
+
+            // Helper function to get credits text
+            function getCreditsText(range) {
+                const creditsMap = {
+                    '1-4': '1-4 Credits',
+                    '5-8': '5-8 Credits',
+                    '9-12': '9-12 Credits'
+                };
+                return creditsMap[range] || range;
+            }
+
+            // Helper function to get difficulty text
+            function getDifficultyText(level) {
+                const difficultyMap = {
+                    'beginner': 'Beginner',
+                    'intermediate': 'Intermediate',
+                    'advanced': 'Advanced'
+                };
+                return difficultyMap[level] || level;
+            }
+
+            // Helper function to get schedule text
+            function getScheduleText(schedule) {
+                const scheduleMap = {
+                    'morning': 'Morning Classes',
+                    'afternoon': 'Afternoon Classes',
+                    'evening': 'Evening Classes',
+                    'no-conflict': 'No Schedule Conflicts'
+                };
+                return scheduleMap[schedule] || schedule;
+            }
+
+            // Remove specific filter
+            function removeFilter(filterType) {
+                if (filterType === 'department') {
+                    document.getElementById('department-filter').value = '';
+                    activeFilters.department = '';
+                } else if (filterType === 'credits') {
+                    document.getElementById('credits-filter').value = '';
+                    activeFilters.credits = '';
+                } else if (filterType === 'difficulty') {
+                    document.getElementById('difficulty-filter').value = '';
+                    activeFilters.difficulty = '';
+                } else if (filterType === 'schedule') {
+                    document.getElementById('schedule-filter').value = '';
+                    activeFilters.schedule = '';
+                } else if (filterType === 'coreCourses') {
+                    document.getElementById('core-courses').checked = false;
+                    activeFilters.coreCourses = false;
+                } else if (filterType === 'highlyRated') {
+                    document.getElementById('highly-rated').checked = false;
+                    activeFilters.highlyRated = false;
+                } else if (filterType === 'noPrerequisites') {
+                    document.getElementById('no-prerequisites').checked = false;
+                    activeFilters.noPrerequisites = false;
+                }
+                
+                // Re-apply filters
+                applyFilters();
+            }
+
+            // Show comparison modal
+            function showComparisonModal() {
+                const modal = document.getElementById('comparison-modal');
+                const content = document.getElementById('comparison-content');
+                
+                // Clear previous content
+                content.innerHTML = '';
+                
+                if (comparisonItems.length === 0) {
+                    content.innerHTML = '<p>No courses selected for comparison.</p>';
+                    modal.style.display = 'flex';
+                    return;
+                }
+                
+                // Create comparison table
+                const table = document.createElement('table');
+                table.className = 'comparison-table';
+                
+                // Create header row with course codes
+                const headerRow = document.createElement('tr');
+                const emptyHeader = document.createElement('th');
+                emptyHeader.textContent = 'Attribute';
+                headerRow.appendChild(emptyHeader);
+                
+                comparisonItems.forEach(item => {
+                    const header = document.createElement('th');
+                    header.textContent = item.code;
+                    headerRow.appendChild(header);
+                });
+                
+                table.appendChild(headerRow);
+                
+                // Add rows for each attribute
+                const attributes = [
+                    { name: 'Course Title', key: 'title' },
+                    { name: 'Credits', key: 'credits' },
+                    { name: 'Department', key: 'department' },
+                    { name: 'Difficulty', key: 'difficulty' },
+                    { name: 'Type', key: 'type' }
+                ];
+                
+                attributes.forEach(attr => {
+                    const row = document.createElement('tr');
+                    const attributeCell = document.createElement('td');
+                    attributeCell.textContent = attr.name;
+                    attributeCell.style.fontWeight = '600';
+                    row.appendChild(attributeCell);
+                    
+                    comparisonItems.forEach(item => {
+                        const valueCell = document.createElement('td');
+                        valueCell.textContent = item[attr.key] || 'N/A';
+                        row.appendChild(valueCell);
+                    });
+                    
+                    table.appendChild(row);
+                });
+                
+                content.appendChild(table);
+                
+                // Show modal
+                modal.style.display = 'flex';
+            }
+
+            // Add to cart functionality with conflict detection
+            document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const courseCode = this.getAttribute('data-course');
+                    const courseTitle = this.getAttribute('data-title');
+                    const credits = parseInt(this.getAttribute('data-credits'));
+                    
+                    // Check if already in cart
+                    if (cartItems.some(item => item.code === courseCode)) {
+                        showToast(`${courseCode} is already in your cart`, 'info');
+                        return;
+                    }
+                    
+                    // Calculate if adding would exceed credit limit
+                    const currentCredits = cartItems.reduce((sum, item) => sum + item.credits, 0);
+                    if (currentCredits + credits > maxCredits) {
+                        showToast('Adding this course would exceed your credit limit', 'info');
+                        return;
+                    }
+                    
+                    // Get schedule data
+                    const courseCard = this.closest('.course-card');
+                    const scheduleData = courseCard.dataset.schedule ? JSON.parse(courseCard.dataset.schedule) : {};
+                    
+                    // Simulate schedule conflict for CS455
+                    if (courseCode === 'CS455') {
+                        const conflictWarning = document.getElementById('conflict-1');
+                        conflictWarning.classList.remove('hidden');
+                        showToast('Schedule conflict detected with CS301', 'warning');
+                    }
+                    
+                    // Add to cart
+                    cartItems.push({
+                        code: courseCode,
+                        title: courseTitle,
+                        credits: credits,
+                        schedule: scheduleData
+                    });
+                    
+                    updateCartDisplay();
+                    showToast(`${courseCode} - ${courseTitle} added to cart`);
+                    
+                    // Update button state
+                    this.innerHTML = 'Added to Cart';
+                    this.classList.remove('btn-primary');
+                    this.classList.add('btn-success');
+                    this.disabled = true;
+                });
+            });
+
+            // Course checkbox functionality for comparison
+            document.querySelectorAll('.course-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const courseCode = this.getAttribute('data-course');
+                    const courseTitle = this.getAttribute('data-title');
+                    const credits = parseInt(this.getAttribute('data-credits'));
+                    const difficulty = this.getAttribute('data-difficulty');
+                    const department = this.getAttribute('data-department');
+                    
+                    if (this.checked) {
+                        // Add to comparison
+                        comparisonItems.push({
+                            code: courseCode,
+                            title: courseTitle,
+                            credits: credits,
+                            difficulty: difficulty,
+                            department: department,
+                            type: this.closest('.course-card').dataset.type === 'core' ? 'Core' : 'Elective'
+                        });
+                        showToast(`${courseCode} added to comparison`, 'comparison');
+                    } else {
+                        // Remove from comparison
+                        comparisonItems = comparisonItems.filter(item => item.code !== courseCode);
+                        showToast(`${courseCode} removed from comparison`, 'info');
+                    }
+                    
+                    updateComparisonDisplay();
+                });
+            });
+
+            // Explanation toggle functionality
+            document.querySelectorAll('.show-explanation-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const targetId = this.getAttribute('data-target');
+                    const explanation = document.getElementById(targetId);
+                    
+                    if (explanation.style.display === 'block') {
+                        explanation.style.display = 'none';
+                        this.textContent = 'Detailed Explanation';
+                    } else {
+                        explanation.style.display = 'block';
+                        this.textContent = 'Hide Explanation';
+                    }
+                });
+            });
+
+            // Not interested functionality
+            document.querySelectorAll('.not-interested-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const courseCode = this.getAttribute('data-course');
+                    const courseCard = this.closest('.course-card');
+                    
+                    // Visual feedback
+                    courseCard.style.opacity = '0.6';
+                    this.textContent = 'Removed from recommendations';
+                    this.disabled = true;
+                    
+                    showToast(`${courseCode} removed from recommendations`, 'info');
+                    
+                    // In a real system, this would send feedback to the recommendation engine
+                    console.log(`User indicated not interested in ${courseCode}`);
+                });
+            });
+
+            // Feedback buttons
+            document.querySelectorAll('.like-feedback, .dislike-feedback').forEach(button => {
+                button.addEventListener('click', function() {
+                    const courseCode = this.getAttribute('data-course');
+                    const isLike = this.classList.contains('like-feedback');
+                    
+                    // Visual feedback
+                    this.style.background = isLike ? '#28a745' : '#dc3545';
+                    this.style.color = 'white';
+                    
+                    // In a real system, this would send feedback to improve recommendations
+                    console.log(`User ${isLike ? 'liked' : 'disliked'} recommendation for ${courseCode}`);
+                    
+                    showToast(`Feedback recorded for ${courseCode}`, 'info');
+                });
+            });
+
+            // View all recommendations
+            document.getElementById('view-all-recommendations').addEventListener('click', function() {
+                alert('In a full implementation, this would show all personalized recommendations with advanced filtering options.');
+            });
+
+            // Review cart
+            document.getElementById('review-cart-btn').addEventListener('click', function() {
+                if (cartItems.length === 0) {
+                    alert('Your cart is empty. Add some courses first.');
+                    return;
+                }
+                alert(`In a full implementation, this would proceed to registration review with ${cartItems.length} courses totaling ${cartItems.reduce((sum, item) => sum + item.credits, 0)} credits.`);
+            });
+
+            // Toast close button
+            document.querySelector('.toast-close').addEventListener('click', function() {
+                document.getElementById('toast-notification').classList.remove('show');
+            });
+
+            // Apply filters button
+            document.getElementById('apply-filters-btn').addEventListener('click', applyFilters);
+
+            // Reset filters button
+            document.getElementById('reset-filters-btn').addEventListener('click', resetFilters);
+
+            // Compare courses button
+            document.getElementById('compare-courses-btn').addEventListener('click', showComparisonModal);
+
+            // Floating compare courses button
+            document.getElementById('floating-comparison-btn').addEventListener('click', showComparisonModal);
+
+            // Close comparison modal
+            document.getElementById('close-comparison-modal').addEventListener('click', function() {
+                document.getElementById('comparison-modal').style.display = 'none';
+            });
+
+            document.getElementById('close-comparison-btn').addEventListener('click', function() {
+                document.getElementById('comparison-modal').style.display = 'none';
+            });
+
+            // Add selected to cart from comparison
+            document.getElementById('add-selected-to-cart').addEventListener('click', function() {
+                comparisonItems.forEach(item => {
+                    if (!cartItems.some(cartItem => cartItem.code === item.code)) {
+                        cartItems.push({
+                            code: item.code,
+                            title: item.title,
+                            credits: item.credits,
+                            schedule: {}
+                        });
+                    }
+                });
+                
+                updateCartDisplay();
+                showToast('Selected courses added to cart');
+                document.getElementById('comparison-modal').style.display = 'none';
+                
+                // Clear comparison
+                comparisonItems = [];
+                updateComparisonDisplay();
+                
+                // Uncheck all checkboxes
+                document.querySelectorAll('.course-checkbox').forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+            });
+
+            // Remove selected from comparison
+            document.getElementById('remove-selected-btn').addEventListener('click', function() {
+                // Clear comparison
+                comparisonItems = [];
+                updateComparisonDisplay();
+                
+                // Uncheck all checkboxes
+                document.querySelectorAll('.course-checkbox').forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+                
+                showToast('All courses removed from comparison', 'info');
+            });
+
+            // Initialize displays
+            updateCartDisplay();
+            updateComparisonDisplay();
+        });
+    </script>
+</body>
+</html>
